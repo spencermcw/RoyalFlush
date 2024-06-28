@@ -39,9 +39,9 @@ export default {
         draw: async ({ commit }, quantity) => {
             commit("MetaMask/SET_PENDING_SIGNATURE", true, { root: true })
             // Send Transaction
-            //const gasLimit = await Deck.contract.estimateGas.draw(quantity);
+            const gasLimit = await Deck.contract.estimateGas.draw(quantity);
             const overrides = {
-                //gasLimit: gasLimit.add(1_000_000)
+                gasLimit: gasLimit.add(1_000_000)
             };
             //console.dir(gasLimit, overrides);
             await Deck.contract.connect(signer).draw(quantity, overrides);
@@ -71,10 +71,10 @@ export default {
             commit("MetaMask/SET_PENDING_SIGNATURE", true, { root: true });
             // Send Transaction
             const { tokenId, numBaseCards, useWildcard } = payload;
-            //const gasLimit = await Deck.contract.estimateGas
-            //    .meld(tokenId, numBaseCards, useWildcard);
+            const gasLimit = await Deck.contract.estimateGas
+                .meld(tokenId, numBaseCards, useWildcard);
             const overrides = {
-                //gasLimit: gasLimit.add(1_000_000)
+                gasLimit: gasLimit.add(1_000_000)
             };
             await Deck.contract.connect(signer)
                 .meld(tokenId, numBaseCards, useWildcard, overrides);
