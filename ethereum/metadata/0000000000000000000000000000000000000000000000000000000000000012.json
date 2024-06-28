@@ -1,0 +1,10 @@
+{
+    "name": "Ace of Hearts",
+    "decimals": 0,
+    "description": "NFTCardGames.io RoyalFlush#BaseCard:ACE_OF_HEARTS",
+    "image": "https:\/\/premiumsignals.info\/nft\/ace_of_hearts.png", 
+    "properties": {
+        "suit": "HEARTS",
+        "value": "ACE"
+    }
+}

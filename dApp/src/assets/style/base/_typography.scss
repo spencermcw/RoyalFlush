@@ -1,0 +1,13 @@
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+h1, h2, h3, h4, h5 {
+    font-weight: bold;
+    font-family: 'Chakra Petch', sans-serif;
+    text-transform: uppercase;
+}
+
+.text-red {
+    color: map-get($map: $theme-colors, $key: "red");
+}

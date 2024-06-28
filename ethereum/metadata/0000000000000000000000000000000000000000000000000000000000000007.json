@@ -1,0 +1,10 @@
+{
+    "name": "Jack of Spades",
+    "decimals": 0,
+    "description": "NFTCardGames.io RoyalFlush#BaseCard:JACK_OF_SPADES",
+    "image": "https:\/\/premiumsignals.info\/nft\/jack_of_spades.png", 
+    "properties": {
+        "suit": "SPADES",
+        "value": "JACK"
+    }
+}

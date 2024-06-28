@@ -1,0 +1,10 @@
+{
+    "name": "Ace of Diamonds",
+    "decimals": 0,
+    "description": "NFTCardGames.io RoyalFlush#BaseCard:ACE_OF_DIAMONDS",
+    "image": "https:\/\/premiumsignals.info\/nft\/ace_of_diamonds.png", 
+    "properties": {
+        "suit": "DIAMONDS",
+        "value": "ACE"
+    }
+}

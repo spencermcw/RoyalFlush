@@ -1,0 +1,51 @@
+// Theme extensions
+$dark: #1D1D1D;
+$gold: #d98e13;
+$custom-theme-colors: (
+    "red": $red,
+    "yellow": $yellow,
+    "discord": #5865f2,
+    "gold": $gold,
+);
+$theme-colors: map-merge($theme-colors, $custom-theme-colors);
+
+
+// Body
+$body-bg: #060606;
+$body-color: $light;
+
+// Buttons
+// $btn-border-radius: 500px;
+// $btn-border-radius-sm: 500px;
+// $btn-border-radius-lg: 500px;
+$btn-secondary-add-color: $dark;
+
+// Navbar
+$navbar-light-color:                $dark;
+$navbar-light-hover-color:          $red;
+$navbar-light-active-color:         $red;
+$navbar-light-disabled-color:       rgba($black, .3);
+
+// Dropdown
+$dropdown-dark-link-active-bg: map-get($theme-colors, "red");
+
+// Nav Tabs
+$nav-link-color:                    $gray-400;
+$nav-link-hover-color:              $gray-300;
+$nav-link-transition:               color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out;
+$nav-link-disabled-color:           $gray-600;
+$nav-pills-border-radius:           $border-radius;
+$nav-pills-link-active-color:       $component-active-color;
+$nav-pills-link-active-bg:          $red;
+
+
+// Tables
+$table-group-separator-color: $gray-600;
+
+
+// Modals
+$modal-content-bg: $black; // rgba($black, 0.8);
+$modal-content-border-radius: 15px;
+$modal-content-border-color: $white;
+$modal-content-border-width: 3px;
+

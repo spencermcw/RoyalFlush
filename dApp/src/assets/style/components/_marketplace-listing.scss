@@ -1,0 +1,26 @@
+.marketplace-listing {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    background-color: $dark;
+    padding: 10px;
+    border-radius: 10px;
+    border: 3px solid $gray-600;
+
+    & > .card-cell {
+        width: 90%;
+    }
+
+    &__info {
+        width: 100%;
+    }
+}
+
+.market-filters {
+    background-color: $dark;
+    padding: 10px;
+    border-radius: 10px;
+    border: 3px solid $gray-600;
+}

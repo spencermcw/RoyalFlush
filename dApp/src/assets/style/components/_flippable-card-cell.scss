@@ -1,0 +1,45 @@
+.flippable-card-cell {
+    position: relative;
+    background-color: transparent;
+    perspective: 1000px; /* Remove this if you don't want the 3D effect */
+    transition: transform 0.2s;
+    scroll-margin: 10vh;
+    border-radius: 10px;
+
+    &.glow {
+        transition: all 0.5s;
+        box-shadow: 0 0 24px rgba($gold, 1);
+        z-index: 1000;
+    }
+
+    &:hover {
+        cursor: pointer;
+        transform: scale(105%) translateY(-5px) rotateZ(2deg);
+        z-index: 1000;
+    }
+
+    &.face-up &__inner {
+        transform: rotateY(180deg);
+    }
+
+    &__inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.8s;
+        transform-style: preserve-3d;
+    }
+
+    &__back, &__face {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+    }
+
+    &__face {
+        transform: rotateY(180deg);
+    }
+}

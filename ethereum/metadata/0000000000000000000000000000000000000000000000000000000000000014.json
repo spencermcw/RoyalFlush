@@ -1,0 +1,10 @@
+{
+    "name": "Wildcard",
+    "decimals": 0,
+    "description": "NFTCardGames.io RoyalFlush#BaseCard:WILDCARD",
+    "image": "https:\/\/premiumsignals.info\/nft\/wildcard.png", 
+    "properties": {
+        "suit": "WILD",
+        "value": "WILD"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "name": "King of Diamonds",
+    "decimals": 0,
+    "description": "NFTCardGames.io RoyalFlush#BaseCard:KING_OF_DIAMONDS",
+    "image": "https:\/\/premiumsignals.info\/nft\/king_of_diamonds.png", 
+    "properties": {
+        "suit": "DIAMONDS",
+        "value": "KING"
+    }
+}

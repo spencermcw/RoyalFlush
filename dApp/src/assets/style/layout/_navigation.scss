@@ -1,0 +1,38 @@
+.navbar {
+    font-family: 'Chakra Petch', sans-serif;
+    text-transform: uppercase;
+    font-weight: bold;
+    position: absolute;
+    background-color: transparent;
+    width: 100%;
+    border-bottom: 2px solid rgba($dark, 0.5);
+
+    &-container {
+        position: relative;
+        z-index: 1000;
+    }
+
+    img {
+        height: 3rem;
+    }
+}
+
+.nav-pills-container {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background-color: rgba(0,0,0, 0.5);
+    border-bottom: 1px solid $light;
+
+    .nav-link {
+        position: relative;
+        display: block;
+
+        .nav-badge {
+            position: absolute;
+            right: -6px;
+            top: -6px;
+            transform: rotate(4deg);
+        }
+    }
+
+}

@@ -1,0 +1,137 @@
+.app {
+    height: 100vh;
+
+    &-viewport {
+        display: flex;
+        overflow-x: hidden;
+        width: 100vw;
+        height: 100vh;
+    }
+
+    &-content {
+        position: relative;
+        margin-top: 3rem;
+        height: calc(100vh - 3rem);
+        // min-width: calc(100vw - $drawer-width);
+        width: 100vw;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        transition: all .4s;
+
+        &.nav-open {
+            overflow: hidden;
+
+            &::before{
+                content: " ";
+                display: block;
+                position: fixed;
+                top: $navbar-height;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba($black, 0.8);
+                z-index: 100;
+            }
+
+            @include media-breakpoint-up(lg) {
+                overflow-y: scroll;
+                margin-left: $navbar-width-lg;
+
+                &::before{
+                    display: none;
+                }
+            }
+        }
+
+    }
+
+
+    &-nav {
+        display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        align-items: center;
+        justify-content: space-between;
+        background-color: $dark;
+        color: $light;
+        width: 100vw;
+        height: $navbar-height;
+        padding: 0.5rem;
+        box-shadow: 0 4px 8px rgba($dark, 0.5);
+        z-index: 2000;
+        border-bottom: 1px solid black;
+
+        .nav-toggle {
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        &__drawer {
+            position: fixed;
+            margin-top: 3rem;
+            height: calc(100vh - 3rem);
+            width: 85vw;
+            top: 0;
+            left: -85vw;
+            background-color: $dark;
+            padding: 1rem 0;
+            transition: all .4s;
+            z-index: 2000;
+            overflow-y: auto;
+            overflow-x: hidden;
+
+            @include media-breakpoint-up(lg) {
+                width: $navbar-width-lg;
+                left: -$navbar-width-lg;
+            }
+
+            &.open {
+                left: 0;
+            }
+
+            .btn {
+                margin: 0 $nav-drawer-padding;
+            }
+
+            i {
+                margin-right: 5px;
+            }
+
+            .section-title {
+                color: #adadad;
+            }
+
+            .section-title, .nav-branding {
+                font-weight: 500;
+                text-transform: uppercase;
+            }
+
+            .nav-branding,
+            .section-title,
+            .link {
+                text-decoration: none;
+                font-family: 'Chakra Petch', sans-serif;
+                padding: 5px $nav-drawer-padding;
+            }
+
+            .link {
+                display: block;
+                color: $light;
+
+                &--child {
+                    padding: 5px calc($nav-drawer-padding + 15px);
+                }
+
+                &.active {
+                    background-color: $red;
+                }
+            }
+
+            .logo {
+                max-height: 100%;
+                max-width: 3rem;
+            }
+        }
+    }
+}

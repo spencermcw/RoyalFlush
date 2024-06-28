@@ -1,0 +1,10 @@
+{
+    "name": "Jack of Hearts",
+    "decimals": 0,
+    "description": "NFTCardGames.io RoyalFlush#BaseCard:JACK_OF_HEARTS",
+    "image": "https:\/\/premiumsignals.info\/nft\/jack_of_hearts.png", 
+    "properties": {
+        "suit": "HEARTS",
+        "value": "JACK"
+    }
+}

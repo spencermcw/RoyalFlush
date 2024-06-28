@@ -1,0 +1,10 @@
+{
+    "name": "Jack of Diamonds",
+    "decimals": 0,
+    "description": "NFTCardGames.io RoyalFlush#BaseCard:JACK_OF_DIAMONDS",
+    "image": "https:\/\/premiumsignals.info\/nft\/jack_of_diamonds.png", 
+    "properties": {
+        "suit": "DIAMONDS",
+        "value": "JACK"
+    }
+}

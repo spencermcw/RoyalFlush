@@ -1,0 +1,15 @@
+.open-pack-buttons {
+    $gap: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-grow: 1;
+    gap: $gap;
+    justify-content: space-evenly;
+    
+    & > button {
+        flex-basis: calc(100% - $gap);
+        @include media-breakpoint-up(lg) {
+            flex-basis: calc(25% - $gap);
+        }
+    }
+}

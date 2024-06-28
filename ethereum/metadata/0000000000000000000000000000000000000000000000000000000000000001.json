@@ -1,0 +1,10 @@
+{
+    "name": "10 of Diamonds",
+    "decimals": 0,
+    "description": "NFTCardGames.io RoyalFlush#BaseCard:TEN_OF_DIAMONDS",
+    "image": "https:\/\/premiumsignals.info\/nft\/ten_of_diamonds.png", 
+    "properties": {
+        "suit": "DIAMONDS",
+        "value": "TEN"
+    }
+}

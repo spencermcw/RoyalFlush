@@ -1,0 +1,10 @@
+{
+    "name": "Queen of Diamonds",
+    "decimals": 0,
+    "description": "NFTCardGames.io RoyalFlush#BaseCard:QUEEN_OF_DIAMONDS",
+    "image": "https:\/\/premiumsignals.info\/nft\/queen_of_diamonds.png", 
+    "properties": {
+        "suit": "DIAMONDS",
+        "value": "QUEEN"
+    }
+}

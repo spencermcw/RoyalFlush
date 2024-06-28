@@ -1,0 +1,14 @@
+.listing-counter {
+    cursor: pointer;
+    position: fixed;
+    top: 4rem;
+    right: 2rem;
+    width: fit-content;
+    max-width: 90vw;
+    background-color: $dark;
+    z-index: 1500;
+    padding: 10px 20px;
+    border: 3px solid $gray-600;
+    border-radius: 5px;
+    box-shadow: 2px 2px 8px rgba(black, 0.5);
+}

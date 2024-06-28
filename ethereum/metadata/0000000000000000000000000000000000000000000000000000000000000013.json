@@ -1,0 +1,10 @@
+{
+    "name": "Ace of Spades",
+    "decimals": 0,
+    "description": "NFTCardGames.io RoyalFlush#BaseCard:ACE_OF_SPADES",
+    "image": "https:\/\/premiumsignals.info\/nft\/ace_of_spades.png", 
+    "properties": {
+        "suit": "SPADES",
+        "value": "ACE"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "name": "10 of Hearts",
+    "decimals": 0,
+    "description": "NFTCardGames.io RoyalFlush#BaseCard:TEN_OF_HEARTS",
+    "image": "https:\/\/premiumsignals.info\/nft\/ten_of_hearts.png", 
+    "properties": {
+        "suit": "HEARTS",
+        "value": "TEN"
+    }
+}

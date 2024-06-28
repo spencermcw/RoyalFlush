@@ -1,0 +1,10 @@
+{
+    "name": "King of Clubs",
+    "decimals": 0,
+    "description": "NFTCardGames.io RoyalFlush#BaseCard:KING_OF_CLUBS",
+    "image": "https:\/\/premiumsignals.info\/nft\/king_of_clubs.png", 
+    "properties": {
+        "suit": "CLUBS",
+        "value": "KING"
+    }
+}

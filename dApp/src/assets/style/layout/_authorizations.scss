@@ -1,0 +1,51 @@
+.authorizations {
+    & > img {
+        max-width: 8rem;
+        margin: 0 auto;
+    }
+
+    &__check {
+        font-size: 1.5rem;
+        color: $green;
+    }
+
+    &__lock {
+        font-size: 1.5rem;
+    }
+
+    &__step {
+        position: relative;
+        color: $light;
+        background-color: $dark;
+        border-width: 3px;
+        border-style: solid;
+        border-radius: 10px;
+        padding: 1rem; 
+
+        &.locked {
+            border-color: $gray-600;
+        }
+
+        &.active {
+            border-color: $red;
+        }
+
+        &.complete {
+            border-color: $green;
+        }
+    }
+
+    &__step-number {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        padding: 6px;
+        min-width: 30px;
+        min-height: 30px;
+        transform: translateX(-50%) translateY(-50%);
+        background-color: $light;
+        border-radius: 5rem;
+        border: inherit;
+        z-index: 1000;
+    }
+}

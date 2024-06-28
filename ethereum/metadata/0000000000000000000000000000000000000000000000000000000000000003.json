@@ -1,0 +1,10 @@
+{
+    "name": "10 of Spades",
+    "decimals": 0,
+    "description": "NFTCardGames.io RoyalFlush#BaseCard:TEN_OF_SPADES",
+    "image": "https:\/\/premiumsignals.info\/nft\/ten_of_spades.png", 
+    "properties": {
+        "suit": "SPADES",
+        "value": "TEN"
+    }
+}

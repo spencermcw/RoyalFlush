@@ -1,0 +1,10 @@
+{
+    "name": "King of Hearts",
+    "decimals": 0,
+    "description": "NFTCardGames.io RoyalFlush#BaseCard:KING_OF_HEARTS",
+    "image": "https:\/\/premiumsignals.info\/nft\/king_of_hearts.png", 
+    "properties": {
+        "suit": "HEARTS",
+        "value": "KING"
+    }
+}
