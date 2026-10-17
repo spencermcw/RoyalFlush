@@ -1,0 +1,92 @@
+# static-base: one Caddyfile for every static site. Serve /srv on $PORT behind a TLS-terminating
+# proxy (Railway, Cloudflare). Everything a site may want to vary is an env var with a default here;
+# normally a site sets only SITE_CSP. See README.md beside this file.
+{
+	admin off
+	auto_https off
+	persist_config off
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+(security_headers) {
+	header {
+		Content-Security-Policy "{$SITE_CSP:default-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'}"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "{$SITE_REFERRER_POLICY:strict-origin-when-cross-origin}"
+		X-Frame-Options "{$SITE_FRAME_OPTIONS:DENY}"
+		Permissions-Policy "{$SITE_PERMISSIONS_POLICY:camera=(), microphone=(), geolocation=()}"
+		Cross-Origin-Opener-Policy "same-origin"
+		Strict-Transport-Security "{$SITE_HSTS:max-age=31536000}"
+		-Server
+	}
+}
+
+:{$PORT:8080} {
+	root * {$SITE_ROOT:/srv}
+	encode {$SITE_ENCODINGS:zstd gzip}
+
+	import security_headers
+
+	# www.example.com -> example.com (301), so a DNS-only www record needs no redirect rule upstream.
+	# SITE_STRIP_WWW=off for a site whose canonical host is the www one.
+	@www {
+		header_regexp www Host ^www\.(.+)$
+		expression "{$SITE_STRIP_WWW:on}" == "on"
+	}
+	redir @www https://{re.www.1}{uri} 301
+
+	# Content-hashed build output (Astro, Vite, Nuxt, SvelteKit): cache for a year.
+	@hashed path {$SITE_HASHED_PATHS:/_astro/* /assets/* /_nuxt/* /_app/immutable/*}
+	header @hashed Cache-Control "{$SITE_HASHED_CACHE:public, max-age=31536000, immutable}"
+
+	# Pages (a path ending in /, in .html, or with no extension): always revalidate.
+	@html {
+		not path {$SITE_HASHED_PATHS:/_astro/* /assets/* /_nuxt/* /_app/immutable/*}
+		path_regexp (/|\.html|/[^./]+)$
+	}
+	header @html Cache-Control "{$SITE_HTML_CACHE:public, max-age=0, must-revalidate}"
+
+	# Everything else (favicon, og image, robots.txt): a short public cache.
+	@other {
+		not path {$SITE_HASHED_PATHS:/_astro/* /assets/* /_nuxt/* /_app/immutable/*}
+		not path_regexp (/|\.html|/[^./]+)$
+	}
+	header @other Cache-Control "{$SITE_STATIC_CACHE:public, max-age=86400}"
+
+	# A site without its own robots.txt gets the permissive default instead of an HTML 404.
+	@fallback_robots {
+		path /robots.txt
+		not file
+	}
+	handle @fallback_robots {
+		root * {$SITE_DEFAULTS:/etc/caddy/defaults}
+		file_server
+	}
+
+	handle {
+		file_server
+	}
+
+	# Caddy drops the headers set above when a request errors, so error responses set their own:
+	# the same security headers, compression, and no long-lived caching of a 404.
+	handle_errors {
+		import security_headers
+		encode {$SITE_ENCODINGS:zstd gzip}
+		header Cache-Control "{$SITE_HTML_CACHE:public, max-age=0, must-revalidate}"
+		@notfound {
+			expression {err.status_code} == 404
+			file {$SITE_404:/404.html}
+		}
+		handle @notfound {
+			rewrite * {$SITE_404:/404.html}
+			file_server {
+				status 404
+			}
+		}
+		handle {
+			respond "{err.status_code} {err.status_text}" {err.status_code}
+		}
+	}
+}

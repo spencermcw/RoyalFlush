@@ -1,0 +1,8 @@
+# What `railway up` leaves out of the upload (on top of .gitignore). Anchored to the repo root.
+# dApp/public is downloaded from GitHub during the build (see Dockerfile).
+/.git
+/.railway/node_modules
+/ethereum
+/dApp/node_modules
+/dApp/dist
+/dApp/public
