@@ -1,8 +1,10 @@
 # What `railway up` leaves out of the upload (on top of .gitignore). Anchored to the repo root.
-# dApp/public is downloaded from GitHub during the build (see Dockerfile).
+# dApp/public (media) is downloaded from GitHub during the build (see Dockerfile).
 /.git
 /.railway/node_modules
 /ethereum
 /dApp/node_modules
 /dApp/dist
-/dApp/public
+/dApp/public/*
+# ...except the vendored demo chain (public/vendor/ganache-*), which the GitHub download lacks.
+!/dApp/public/vendor

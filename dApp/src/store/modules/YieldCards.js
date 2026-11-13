@@ -4,6 +4,7 @@ import { suitForIndex } from "../static/cards";
 import { ethers } from "ethers";
 import * as Game from "../contracts/Game";
 import { playSound, Sounds } from "../Audio";
+import { clockSkewSeconds } from "../mode";
 
 
 const initialState = {
@@ -22,7 +23,8 @@ const buildCard = (card) => {
             const yieldScale = 2.05;
             const multiplier = Math.ceil(Math.pow(yieldScale, Number(card.level.sub(1)))*100);
             const yieldPerSecond = card.yield.mul(multiplier).div(100);
-            const secondsNow = ethers.BigNumber.from((Date.now()/1000).toFixed(0));
+            // The chain's "now": the demo clock can run ahead of the wall clock ("Skip ahead a day").
+            const secondsNow = ethers.BigNumber.from((Date.now()/1000 + clockSkewSeconds()).toFixed(0));
             const elapsedSeconds = secondsNow.sub(card.lastClaimed);
             const estimate = yieldPerSecond.mul(elapsedSeconds);
             if (estimate.lt(0)) {

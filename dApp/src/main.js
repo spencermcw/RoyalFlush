@@ -21,6 +21,7 @@ import './assets/style/index.scss'
 import App from './App.vue'
 import store from './store'
 import router from './router'
+import { isDemo } from './store/mode'
 
 const app = createApp(App)
 app.use(store)
@@ -29,10 +30,12 @@ app.mount('#app')
 
 const { ethereum } = window
 
-// Without a wallet (see store/ethers.js) there are no account changes to follow.
-ethereum?.on("accountsChanged", async () => {
-    await store.dispatch("MetaMask/updateAccounts");
-    router.go({ name: "login" });
-});
+// Only a real wallet changes accounts: not in demo mode, and not without a wallet (store/ethers.js).
+if (!isDemo) {
+    ethereum?.on("accountsChanged", async () => {
+        await store.dispatch("MetaMask/updateAccounts");
+        router.go({ name: "login" });
+    });
+}
 
 

@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from "vue-router"
 import store from "../store"
+import { isDemo, demo } from "../store/mode"
 
 const updateAccounts = async (to, from, next) => {
     await store.dispatch("MetaMask/updateAccounts");
@@ -7,6 +8,19 @@ const updateAccounts = async (to, from, next) => {
 }
 
 const requireConnection = async (to, from, next) => {
+    // Demo: the player's approvals were made while the demo chain was set up, so once the demo is
+    // started the only wait is for the chain to boot (updateAccounts asks it for the account).
+    if (isDemo) {
+        if (!demo.started)
+            return next({ name: "login" });
+        try {
+            await store.dispatch("MetaMask/updateAccounts");
+        } catch (e) {
+            return next({ name: "login" });
+        }
+        return next();
+    }
+
     await store.dispatch("MetaMask/updateAccounts");
 
     const setupSteps = [

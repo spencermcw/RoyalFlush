@@ -49,3 +49,26 @@
         z-index: 1000;
     }
 }
+
+// Login: "Play the demo" call to action above the wallet steps
+.demo-cta {
+    &__note {
+        color: $gray-400;
+    }
+
+    &__or {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: $gray-500;
+        font-family: 'Chakra Petch', sans-serif;
+        text-transform: uppercase;
+
+        &::before,
+        &::after {
+            content: "";
+            flex: 1;
+            border-top: 1px solid $gray-700;
+        }
+    }
+}

@@ -3,6 +3,9 @@
     import { useStore } from "vuex"
     import MetaMaskOnboarding from "@metamask/onboarding"
     import { shortAddress } from "../store/static/lib"
+    import { useRouter } from "vue-router"
+    import { isDemo, demo } from "../store/mode"
+    import { startDemo } from "../store/ethers"
 
     defineProps({
         btnClass: {
@@ -18,6 +21,10 @@
     const { ethereum } = window
 
     const store = useStore()
+    const router = useRouter()
+
+    // Demo wallet label: "DEMO · 0x12…ab"
+    const demoLabel = (address) => `DEMO · ${address.substring(0, 4)}…${address.substring(address.length - 2)}`
 
     const pending = computed(() => store.getters["MetaMask/pending"])
     const account = computed(() => store.getters["MetaMask/activeAccount"])
@@ -65,6 +72,13 @@
         // Abort if already connected
         if (connected.value)
             return;
+        // Demo: start the in-browser chain instead of asking a wallet
+        if (isDemo) {
+            await startDemo()
+            await store.dispatch("MetaMask/updateAccounts")
+            router.push("/dapp/play/draw")
+            return;
+        }
         // Check MetaMask Installation
         if (!MetaMaskIsInstalled.value) { // Install Metamask
             new MetaMaskOnboarding().startOnboarding()
@@ -77,7 +91,7 @@
 
 <template>
     <div class="MetaMask d-grid">
-        <button class="btn" :class="btnClass" :disabled="pending || disabled" @click="connectWallet">
+        <button class="btn" :class="btnClass" :disabled="pending || disabled || demo.booting" @click="connectWallet">
             <!-- Pending Signature -->
             <div v-if="pendingSignature">
                 <span class="me-2">Pending Signature</span>
@@ -98,7 +112,9 @@
 
             <div v-if="!pending">
                 <i class="bi-wallet2 me-2"></i>
-                <span v-if="connected">{{ shortAddress(account) }}</span>
+                <span v-if="connected && isDemo">{{ demoLabel(account) }}</span>
+                <span v-else-if="connected">{{ shortAddress(account) }}</span>
+                <span v-else-if="isDemo">Play the demo</span>
                 <span v-else>Connect MetaMask</span>
             </div>
         </button>

@@ -8,8 +8,31 @@
     import "bootstrap-icons/font/bootstrap-icons.css"
     import MetamaskVue from "../components/Metamask.vue";
     import { playSound, Sounds } from "../store/Audio";
+    import { isDemo, demo, switchMode } from "../store/mode";
+    import { skipAheadDay, resetDemo } from "../store/ethers";
 
     const store = useStore()
+
+    // Demo mode controls
+    const showDemoBanner = computed(() => isDemo && demo.started);
+    const skipping = ref(false);
+    const onSkipAhead = async () => {
+        skipping.value = true;
+        try {
+            await skipAheadDay();
+            store.commit("Alerts/ADD_ALERT", { autoDismiss: 5, text: "The demo clock moved ahead one day." });
+            playSound(Sounds.CLAIM);
+        } catch (e) {
+            store.commit("Alerts/ADD_ERROR_ALERT", e.message);
+        } finally {
+            skipping.value = false;
+        }
+    };
+    const onResetDemo = async () => {
+        if (!window.confirm("Reset the demo? Your demo cards, Yield Cards and $CARD are wiped and a new demo starts."))
+            return;
+        await resetDemo();
+    };
 
     const packs = computed(() => store.state.Packs.unopenedPacks.length);
     store.dispatch("initialize");
@@ -142,6 +165,15 @@
     <div class="app">
         <AlertContainerVue></AlertContainerVue>
 
+        <div class="demo-boot" v-if="demo.booting" role="status" aria-live="polite">
+            <div class="demo-boot__panel">
+                <img :src="Logo" alt="" class="demo-boot__logo">
+                <div class="spinner-border text-light mb-3"></div>
+                <div class="h4 mb-1">Setting up your demo table</div>
+                <div class="demo-boot__step">{{ demo.step || "Almost ready" }}</div>
+            </div>
+        </div>
+
         <div class="app-viewport">
 
             <nav class="app-nav">
@@ -193,6 +225,13 @@
                         {{ Number(ethers.utils.formatEther(totalYieldEstimate())).toFixed(4) }} $CARD
                     </router-link>
 
+                    <template v-if="showDemoBanner">
+                        <span class="link">Demo Clock</span>
+                        <button class="btn btn-outline-light" :disabled="skipping" @click="onSkipAhead">
+                            <i class="bi-fast-forward-fill"></i> Skip ahead a day
+                        </button>
+                    </template>
+
                     <span class="link">$CARD Faucet</span>
                     <button class="btn btn-red" @click="store.dispatch('CARDCoin/tapFaucet')">
                         Get 10,000 $CARD
@@ -208,6 +247,15 @@
             </div>
 
             <div class="app-content" ref="contentRef" @click="() => { if(isMobile && drawerOpen) closeNav() }">
+                <div class="demo-banner" v-if="showDemoBanner" role="status">
+                    <span class="demo-banner__text">
+                        <strong>Demo mode:</strong> practice chips, nothing is on a real chain.
+                    </span>
+                    <span class="demo-banner__actions">
+                        <button class="btn btn-sm btn-outline-light" @click.stop="onResetDemo">Reset demo</button>
+                        <button class="btn btn-sm btn-red" @click.stop="switchMode('wallet')">Connect a real wallet</button>
+                    </span>
+                </div>
                 <router-view></router-view>
             </div>
 

@@ -33,5 +33,10 @@ FROM static-base
 # window.ethereum), which runs in the extension and is not subject to the page's CSP, so
 # connect-src stays 'self'. Without MetaMask, "Connect" runs @metamask/onboarding, which frames
 # MetaMask's forwarder (fwd.metamask.io). Fonts are self-hosted. Hash routing: no SPA fallback.
-ENV SITE_CSP="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self'; connect-src 'self'; frame-src https://fwd.metamask.io; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
+# Demo mode runs Ganache (public/vendor/ganache-7.9.2) in the page, which needs 'unsafe-eval':
+# its EVM calls new Function(...) when it loads, and it compiles WebAssembly ('unsafe-eval' covers
+# that too). Scripts still come only from 'self'; no inline script is allowed.
+ENV SITE_CSP="default-src 'none'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self'; connect-src 'self'; frame-src https://fwd.metamask.io; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
+# The vendored demo chain sits under a versioned path, so it can be cached like the hashed assets.
+ENV SITE_HASHED_PATHS="/assets/* /vendor/*"
 COPY --from=build /app/dApp/dist/ /srv/

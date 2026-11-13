@@ -135,3 +135,65 @@
         }
     }
 }
+
+// Demo mode: slim banner pinned to the top of the scrolling content
+.demo-banner {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.25rem 0.75rem;
+    padding: 0.35rem 1rem;
+    background-color: darken($gold, 22%);
+    border-bottom: 1px solid $gold;
+    color: $light;
+    font-size: 0.9rem;
+    font-family: 'Chakra Petch', sans-serif;
+
+    &__actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-sm {
+        padding: 0.1rem 0.6rem;
+    }
+}
+
+// Demo mode: first boot loads and sets up the in-browser chain
+.demo-boot {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba($black, 0.85);
+    color: $light;
+    text-align: center;
+
+    &__panel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+        max-width: 22rem;
+        background-color: $dark;
+        border: 3px solid $red;
+        border-radius: 10px;
+        font-family: 'Chakra Petch', sans-serif;
+    }
+
+    &__logo {
+        max-width: 5rem;
+        margin-bottom: 1rem;
+    }
+
+    &__step {
+        color: $gray-400;
+    }
+}
