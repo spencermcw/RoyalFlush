@@ -7,8 +7,12 @@ import { playSound, Sounds } from "../Audio";
 import { clockSkewSeconds } from "../mode";
 
 
+// yieldCards holds only the player's own Yield Cards (balanceOf/tokenOfOwnerByIndex). Cards looked
+// up for display only, such as those in other players' marketplace listings, go to otherCards, so
+// they never show up in the player's collection, yield total, Level Up or Sell lists.
 const initialState = {
     yieldCards: [],
+    otherCards: [],
     gameApproval: false,
 }
 
@@ -44,7 +48,9 @@ export default {
 
     getters: {
         getById: (state) => (id) => {
-            return state.yieldCards.find(yc => yc.id.toString() === id.toString());
+            const key = id.toString();
+            return state.yieldCards.find(yc => yc.id.toString() === key)
+                ?? state.otherCards.find(yc => yc.id.toString() === key);
         },
 
         adjustedBalances: (state, getters, rootState, rootGetters) => {
@@ -73,17 +79,17 @@ export default {
 
     mutations: {
         RESET: (state) => {
-            const { yieldCards, gameApproval } = initialState;
+            const { yieldCards, otherCards, gameApproval } = initialState;
             state.yieldCards = [...yieldCards];
+            state.otherCards = [...otherCards];
             state.gameApproval = gameApproval;
         },
         SET_APPROVAL: (state, approval) => {
             state.gameApproval = approval;
         },
-        APPEND_YIELD_CARDS: (state, cards) => {
+        CACHE_OTHER_CARDS: (state, cards) => {
             cards.forEach(card => {
-                const compiledCard = buildCard(card);
-                state.yieldCards.push(compiledCard);
+                state.otherCards.push(buildCard(card));
             });
         },
         SET_YIELD_CARDS: (state, cards) => {
@@ -112,11 +118,12 @@ export default {
                 .catch(console.error);
         },
 
+        // Look up Yield Cards by id for display (marketplace listings). Not the player's collection.
         fetchYieldCards: ({ commit, getters }, yieldCardIds) => {
             return new Promise((resolve, reject) => {
                 const newIds = yieldCardIds.filter(id => getters.getById(id) === undefined);
                 Promise.all(newIds.map(id => YieldCards.contract.tokenById(id)))
-                    .then(yieldCards => commit("APPEND_YIELD_CARDS", yieldCards))
+                    .then(yieldCards => commit("CACHE_OTHER_CARDS", yieldCards))
                     .then(() => resolve())
                     .catch(reject);
             })
@@ -126,7 +133,9 @@ export default {
             const playerAddress = await signer.getAddress();
             const playerBalance = await YieldCards.contract.balanceOf(playerAddress);
             if (playerBalance.eq(ethers.constants.Zero)) {
-              return;
+                // The last card left (sold, listed or leveled up): clear the stale list too.
+                commit("SET_YIELD_CARDS", []);
+                return;
             }
             const tokenIds = await Promise.all(
                 Array.from(Array(playerBalance.toNumber()).keys()) // [0..(playerBalance-1)]

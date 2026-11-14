@@ -7,6 +7,8 @@
 //   3. Choosing 25 cards (12,500 $CARD) is blocked up front with a "Not enough $CARD" notice.
 //   4. Dispatching that 25-card draw anyway (the contract reverts) clears "Pending Signature" and
 //      shows an error, instead of hanging as it used to.
+//   5. Opening the marketplace, where a simulated player lists a Yield Card, leaves the player's
+//      own Yield Cards empty (the listed card used to land in the player's collection).
 //
 // Run: npm run build:testnet && npm run test:e2e   (needs Chromium: npx playwright install chromium)
 import http from "node:http"
@@ -81,6 +83,29 @@ try {
     await page.getByText(/Could not draw a pack/i).waitFor({ timeout: 5_000 })
     assert.doesNotMatch(await walletButton.innerText(), /Pending/i)
     console.log("ok - a reverting draw ends 'Pending Signature' and shows an error")
+
+    // The demo's third simulated player lists a Yield Card on the marketplace. Viewing it must not
+    // put that card in the player's own collection (it used to, via YieldCards/fetchYieldCards).
+    const store = (fn) => page.evaluate(fn)
+    assert.deepEqual(await store(() => document.querySelector("#app").__vue_app__.config.globalProperties
+        .$store.getters["YieldCards/adjustedBalances"].length), 0)
+    await page.evaluate(() => { window.location.hash = "#/dapp/marketplace/buy" })
+    await page.waitForFunction(() => {
+        const s = document.querySelector("#app").__vue_app__.config.globalProperties.$store
+        return s.state.Marketplace.listings.some(l => l.yieldCardIds.length > 0)
+    }, null, { timeout: 30_000 })
+    const view = await store(() => {
+        const s = document.querySelector("#app").__vue_app__.config.globalProperties.$store
+        const listing = s.state.Marketplace.listings.find(l => l.yieldCardIds.length > 0)
+        return {
+            owned: s.getters["YieldCards/adjustedBalances"].map(yc => yc.id.toString()),
+            listedCardShown: Boolean(listing.yieldCards[0]),
+        }
+    })
+    assert.deepEqual(view.owned, [], "another player's listed Yield Card is not the player's")
+    assert.equal(view.listedCardShown, true, "the listed Yield Card is still shown in its listing")
+    await page.getByText(/Yield Cards \(0\)/).first().waitFor({ state: "attached", timeout: 5_000 })
+    console.log("ok - a simulated player's listed Yield Card stays out of the player's collection")
 
     assert.deepEqual(pageErrors, [], "no uncaught page errors")
     console.log("ok - no uncaught page errors")
