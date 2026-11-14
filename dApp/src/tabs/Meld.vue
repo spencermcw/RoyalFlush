@@ -84,7 +84,7 @@
             numBaseCards: numBaseCards.value,
             useWildcard: useWildcard.value,
         })
-        .then(() => cardToMeldShape.value = null);
+        .then(sent => { if (sent) cardToMeldShape.value = null; });
     }
 
 </script>

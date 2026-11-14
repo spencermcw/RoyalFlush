@@ -3,6 +3,49 @@ import * as Deck from "../contracts/Deck"
 import * as Game from "../contracts/Game"
 import { ethers } from "ethers"
 import { playSound, Sounds } from "../Audio"
+import { txErrorMessage } from "../txErrors"
+
+const packAlert = {
+    autoDismiss: 5,
+    text: `New Pack ready to open!`,
+    links: [{
+        to: "/dapp/play/packs",
+        text: "Open Now"
+    }]
+}
+
+const sendPackTransaction = async (commit, { send, estimate, failure, sound }) => {
+    commit("MetaMask/SET_PENDING_SIGNATURE", true, { root: true })
+    let tx
+    try {
+        const gasLimit = await estimate()
+        tx = await send({ gasLimit: gasLimit.add(1_000_000) })
+    } catch (e) {
+        console.error(failure, e)
+        commit("Alerts/ADD_ERROR_ALERT", `${failure}: ${txErrorMessage(e)}`, { root: true })
+        return false
+    } finally {
+        commit("MetaMask/SET_PENDING_SIGNATURE", false, { root: true })
+    }
+
+    commit("MetaMask/ADD_PENDING_TXN", null, { root: true })
+    const player = await signer.getAddress()
+    const filter = Game.contract.filters.PackIssued(player)
+    Game.contract.removeAllListeners(Game.contract.filters.PackIssued)
+    Game.contract.once(filter, (_) => {
+        commit("MetaMask/SUB_PENDING_TXN", null, { root: true })
+        playSound(sound)
+        commit("Alerts/ADD_ALERT", packAlert, { root: true })
+    })
+    // A transaction that reverts once mined never emits PackIssued: stop waiting for it.
+    tx.wait().catch(e => {
+        console.error(failure, e)
+        Game.contract.removeAllListeners(filter)
+        commit("MetaMask/SUB_PENDING_TXN", null, { root: true })
+        commit("Alerts/ADD_ERROR_ALERT", `${failure}: ${txErrorMessage(e)}`, { root: true })
+    })
+    return true
+}
 
 export default {
     namespaced: true,
@@ -36,68 +79,27 @@ export default {
     },
 
     actions: {
+        // Draw and meld send one transaction, then wait for Game's PackIssued event. Any failure on
+        // the way (a revert caught by gas estimation, such as too little $CARD, a rejected
+        // signature, or a transaction that reverts once mined) ends the pending state and shows an
+        // error, instead of leaving the wallet button on "Pending Signature" for good.
         draw: async ({ commit }, quantity) => {
-            commit("MetaMask/SET_PENDING_SIGNATURE", true, { root: true })
-            // Send Transaction
-            const gasLimit = await Deck.contract.estimateGas.draw(quantity);
-            const overrides = {
-                gasLimit: gasLimit.add(1_000_000)
-            };
-            //console.dir(gasLimit, overrides);
-            await Deck.contract.connect(signer).draw(quantity, overrides);
-            commit("MetaMask/SET_PENDING_SIGNATURE", false, { root: true })
-            commit("MetaMask/ADD_PENDING_TXN", null, { root: true })
-            const player = await signer.getAddress();
-            Game.contract.removeAllListeners(Game.contract.filters.PackIssued);
-            Game.contract.once(
-                Game.contract.filters.PackIssued(player),
-                (_) => {
-                    commit("MetaMask/SUB_PENDING_TXN", null, { root: true });
-                    const alert = {
-                        autoDismiss: 5,
-                        text: `New Pack ready to open!`,
-                        links: [{
-                            to: "/dapp/play/packs",
-                            text: "Open Now"
-                        }]
-                    }
-                    playSound(Sounds.PURCHASE);
-                    commit("Alerts/ADD_ALERT", alert, { root:  true })
-                }
-            );
+            return sendPackTransaction(commit, {
+                send: (overrides) => Deck.contract.connect(signer).draw(quantity, overrides),
+                estimate: () => Deck.contract.estimateGas.draw(quantity),
+                failure: "Could not draw a pack",
+                sound: Sounds.PURCHASE,
+            })
         },
 
-        meld: async ({ commit, dispatch, rootGetters }, payload) => {
-            commit("MetaMask/SET_PENDING_SIGNATURE", true, { root: true });
-            // Send Transaction
+        meld: async ({ commit }, payload) => {
             const { tokenId, numBaseCards, useWildcard } = payload;
-            const gasLimit = await Deck.contract.estimateGas
-                .meld(tokenId, numBaseCards, useWildcard);
-            const overrides = {
-                gasLimit: gasLimit.add(1_000_000)
-            };
-            await Deck.contract.connect(signer)
-                .meld(tokenId, numBaseCards, useWildcard, overrides);
-            commit("MetaMask/ADD_PENDING_TXN", null, { root: true });
-            const player = await signer.getAddress();
-            Game.contract.removeAllListeners(Game.contract.filters.PackIssued);
-            Game.contract.once(
-                Game.contract.filters.PackIssued(player),
-                (_) => {
-                    commit("MetaMask/SUB_PENDING_TXN", null, { root: true })
-                    const alert = {
-                        autoDismiss: 5,
-                        text: `New Pack ready to open!`,
-                        links: [{
-                            to: "/dapp/play/packs",
-                            text: "Open Now"
-                        }]
-                    }
-                    commit("Alerts/ADD_ALERT", alert, { root:  true })
-                    playSound(Sounds.MELD_SUCCESS);
-                }
-            );
-            commit("MetaMask/SET_PENDING_SIGNATURE", false, { root: true });
+            return sendPackTransaction(commit, {
+                send: (overrides) => Deck.contract.connect(signer).meld(tokenId, numBaseCards, useWildcard, overrides),
+                estimate: () => Deck.contract.estimateGas.meld(tokenId, numBaseCards, useWildcard),
+                failure: "Could not meld",
+                sound: Sounds.MELD_SUCCESS,
+            })
         }
     }
 }
